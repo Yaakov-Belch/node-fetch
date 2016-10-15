@@ -26,6 +26,7 @@ import Headers from '../src/headers.js';
 import Response from '../src/response.js';
 import Request from '../src/request.js';
 import Body from '../src/body.js';
+import Blob from '../src/blob.js';
 import FetchError from '../src/fetch-error.js';
 // test with native promise on node 0.11, and bluebird for node 0.10
 fetch.Promise = fetch.Promise || bluebird;
@@ -1504,6 +1505,25 @@ describe(`node-fetch with FOLLOW_SPEC = ${defaultFollowSpec}`, () => {
 		});
 	});
 
+	it('should support blob() method in Request constructor', function() {
+		const res = new Response('a=1', {
+			headers: {
+				'Content-Type': 'text/plain'
+			}
+		});
+		return res.blob().then(function(result) {
+			expect(result).to.be.an.instanceOf(Blob);
+			expect(result.isClosed).to.be.false;
+			expect(result.size).to.equal(3);
+			expect(result.type).to.equal('text/plain');
+
+			result.close();
+			expect(result.isClosed).to.be.true;
+			expect(result.size).to.equal(0);
+			expect(result.type).to.equal('text/plain');
+		});
+	});
+
 	it('should support clone() method in Response constructor', function() {
 		let body = resumer().queue('a=1').end();
 		body = body.pipe(new stream.PassThrough());
@@ -1621,6 +1641,28 @@ describe(`node-fetch with FOLLOW_SPEC = ${defaultFollowSpec}`, () => {
 		});
 	});
 
+	it('should support blob() method in Request constructor', function() {
+		url = base;
+		var req = new Request(url, {
+			body: 'a=1',
+			headers: {
+				'Content-Type': 'text/plain'
+			}
+		});
+		expect(req.url).to.equal(url);
+		return req.blob().then(function(result) {
+			expect(result).to.be.an.instanceOf(Blob);
+			expect(result.isClosed).to.be.false;
+			expect(result.size).to.equal(3);
+			expect(result.type).to.equal('text/plain');
+
+			result.close();
+			expect(result.isClosed).to.be.true;
+			expect(result.size).to.equal(0);
+			expect(result.type).to.equal('text/plain');
+		});
+	});
+
 	it('should support arbitrary url in Request constructor', function() {
 		url = 'anything';
 		const req = new Request(url);
@@ -1661,9 +1703,10 @@ describe(`node-fetch with FOLLOW_SPEC = ${defaultFollowSpec}`, () => {
 		});
 	});
 
-	it('should support arrayBuffer(), text(), json() and buffer() method in Body constructor', function() {
+	it('should support arrayBuffer(), blob(), text(), json() and buffer() method in Body constructor', function() {
 		const body = new Body('a=1');
 		expect(body).to.have.property('arrayBuffer');
+		expect(body).to.have.property('blob');
 		expect(body).to.have.property('text');
 		expect(body).to.have.property('json');
 		expect(body).to.have.property('buffer');
