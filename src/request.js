@@ -26,10 +26,10 @@ export default class Request extends Body {
 				// in order to support Node.js' Url objects; though WHATWG's URL objects
 				// will fall into this branch also (since their `toString()` will return
 				// `href` property anyway)
-				parsedURL = parse_url(input.href);
+				parsedURL = parse_url(encodeURI(input.href));
 			} else {
 				// coerce input to a string before attempting to parse
-				parsedURL = parse_url(input + '');
+				parsedURL = parse_url(encodeURI(input + ''));
 			}
 			input = {};
 		} else {

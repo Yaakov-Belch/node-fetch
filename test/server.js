@@ -42,6 +42,12 @@ export default class TestServer {
 			res.end('text');
 		}
 
+		if (p === encodeURI('/中文')) {
+			res.statusCode = 200;
+			res.setHeader('Content-Type', 'text/plain');
+			res.end('text');
+		}
+
 		if (p === '/options') {
 			res.statusCode = 200;
 			res.setHeader('Allow', 'GET, HEAD, OPTIONS');

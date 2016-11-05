@@ -150,6 +150,18 @@ describe(`node-fetch with FOLLOW_SPEC = ${defaultFollowSpec}`, () => {
 		});
 	});
 
+	it('should escape URL', function() {
+		url = `${base}中文`;
+		return fetch(url).then(res => {
+			expect(res.headers.get('content-type')).to.equal('text/plain');
+			return res.text().then(result => {
+				expect(res.bodyUsed).to.be.true;
+				expect(result).to.be.a('string');
+				expect(result).to.equal('text');
+			});
+		});
+	});
+
 	it('should accept html response (like plain text)', function() {
 		url = `${base}html`;
 		return fetch(url).then(res => {
