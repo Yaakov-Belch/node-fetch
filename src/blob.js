@@ -13,30 +13,7 @@ export default class Blob {
 		const blobParts = arguments[0];
 		const options = arguments[1];
 
-		const buffers = [];
-
-		if (blobParts) {
-			const a = blobParts;
-			const length = Number(a.length);
-			for (let i = 0; i < length; i++) {
-				const element = a[i];
-				let buffer;
-				if (element instanceof Buffer) {
-					buffer = element;
-				} else if (ArrayBuffer.isView(element)) {
-					buffer = new Buffer(new Uint8Array(element.buffer, element.byteOffset, element.byteLength));
-				} else if (element instanceof ArrayBuffer) {
-					buffer = new Buffer(new Uint8Array(element));
-				} else if (element instanceof Blob) {
-					buffer = element[BUFFER];
-				} else {
-					buffer = new Buffer(typeof element === 'string' ? element : String(element));
-				}
-				buffers.push(buffer);
-			}
-		}
-
-		this[BUFFER] = Buffer.concat(buffers);
+		this[BUFFER] = Buffer.concat(blobParts || []);
 
 		let type = options && options.type !== undefined && String(options.type).toLowerCase();
 		if (type && !/[^\u0020-\u007E]/.test(type)) {
